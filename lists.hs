@@ -130,3 +130,17 @@ encode = consumeEqual (\acc front -> acc ++ [(length front, head front)])
 
 -- Problem 11
 
+data ListElem a = Single a | Multiple Int a
+    deriving Show
+
+encodeModified :: Eq a => [a] -> [ListElem a]
+encodeModified = consumeEqual (\acc front -> acc ++ munge front)
+    where munge [x]    = [Single x]
+          munge (x:xs) = [Multiple (length (x:xs)) x]
+          munge _      = error "this should never happen"
+
+-- this should perform better than encodeModified
+encodeModified' = reverse . consumeEqual (\acc front -> munge front : acc)
+    where munge [x]    = Single x
+          munge (x:xs) = Multiple (length (x:xs)) x
+          munge _      = error "this should never happen"

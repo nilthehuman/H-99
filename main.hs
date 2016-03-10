@@ -17,10 +17,13 @@ tests1to10 = map (\f l x -> f (l ++ [x]          ) == x)                   [   m
              map (\f l i -> let res = f l in (i < 0 || length res <= i || let p = res !! i in all (== head p) p)) [pack, pack', pack''] ++
              map (\f l _ -> length l == sum (map fst $ f l))                                                      [encode]
 
---tests11to20 :: [[Int] -> Int -> Bool]
---tests11to20 = ...
+tests11to20 :: [[Int] -> Int -> Bool]
+tests11to20 = map (\f l _ -> length l == sum (map int $ f l)) [encodeModified, encodeModified']
+              where int (Single     _) = 1
+                    int (Multiple i _) = i
+              -- more tests to come...
 
-tests = concat [tests1to10]
+tests = concat [tests1to10, tests11to20]
 
 testAll :: IO ()
 testAll = mapM_ quickCheck tests
