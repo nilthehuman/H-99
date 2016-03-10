@@ -105,6 +105,9 @@ consumeEqual gather = consume gather split []
 
 compress' = consumeEqual (\acc front -> acc ++ [head front])
 
+-- this should perform better than compress'
+compress'' = reverse . consumeEqual (\acc front -> head front : acc)
+
 -- Problem 9
 pack :: Eq a => [a] -> [[a]]
 pack []   = []
@@ -114,6 +117,9 @@ pack list = foldr step [[last list]] (init list)
             | otherwise                = [x]:acc
 
 pack' = consumeEqual (\acc front -> acc ++ [front])
+
+-- this should perform better than pack'
+pack'' = reverse . consumeEqual (\acc front -> front : acc)
 
 -- Problem 10
 encode :: Eq a => [a] -> [(Int, a)]

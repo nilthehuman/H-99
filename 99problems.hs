@@ -11,8 +11,8 @@ tests1to10 = map (\f l x -> f (l ++ [x]          ) == x)                   [   m
              map (\f l _ -> f l == reverse l)                              [myReverse, myReverse', myReverse''] ++
              map (\f l i -> i < 0 || length l <= i || not (f l) || l !! i == l !! (length l - i - 1))             [isPalindrome, isPalindrome', isPalindrome''] ++
              -- no test for flatten
-             map (\f l i -> let res = f l in (i < 1 || length res <= i || (res !! (i-1) /= res !! i)))            [compress, compress'] ++
-             map (\f l i -> let res = f l in (i < 0 || length res <= i || let p = res !! i in all (== head p) p)) [pack, pack'] ++
+             map (\f l i -> let res = f l in (i < 1 || length res <= i || (res !! (i-1) /= res !! i)))            [compress, compress', compress''] ++
+             map (\f l i -> let res = f l in (i < 0 || length res <= i || let p = res !! i in all (== head p) p)) [pack, pack', pack''] ++
              map (\f l _ -> length l == sum (map fst $ f l))                                                      [encode]
 
 --tests11to20 :: [[Int] -> Int -> Bool]
