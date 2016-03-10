@@ -18,10 +18,13 @@ tests1to10 = map (\f l x -> f (l ++ [x]          ) == x)                   [   m
              map (\f l _ -> length l == sum (map fst $ f l))                                                      [encode]
 
 tests11to20 :: [[Int] -> Int -> Bool]
-tests11to20 = map (\f l _ -> length l == sum (map int $ f l)) [encodeModified, encodeModified']
+tests11to20 = map (\f l _ -> length l == sum (map int $ f l))                         [encodeModified, encodeModified'] ++
+              map (\f l i -> let l' = map (if i < 1 then Single else Multiple i) l in
+                                      length (f l') == sum (map int l'))              [decodeModified] ++
+              map (\f l _ -> length l == sum (map int $ f l))                         [encodeDirect] ++
+              map (\f l i -> i < 0 || length l <= i || l !! i == (f l) !! (i*2))      [dupli, dupli', dupli'']
               where int (Single     _) = 1
                     int (Multiple i _) = i
-              -- more tests to come...
 
 tests = concat [tests1to10, tests11to20]
 

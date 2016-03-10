@@ -129,7 +129,6 @@ encode = consumeEqual (\acc front -> acc ++ [(length front, head front)])
 -- so complete that using explicit recursion on lists can be considered a code smell.
 
 -- Problem 11
-
 data ListElem a = Single a | Multiple Int a
     deriving Show
 
@@ -144,3 +143,27 @@ encodeModified' = reverse . consumeEqual (\acc front -> munge front : acc)
     where munge [x]    = Single x
           munge (x:xs) = Multiple (length (x:xs)) x
           munge _      = error "this should never happen"
+
+-- Problem 12
+decodeModified :: [ListElem a] -> [a]
+decodeModified = concatMap demunge
+    where demunge (Single     x) = [x]
+          demunge (Multiple i x) = replicate i x
+
+-- Problem 13
+encodeDirect :: Eq a => [a] -> [ListElem a]
+encodeDirect []     = []
+encodeDirect (x:xs) = reverse $ foldl step [Single x] xs
+    -- this feels clumsy compared to encodeModified
+    where step (Single x:xs)     y = if x == y then Multiple 2 x:xs else Single y:Single x:xs
+          step (Multiple i x:xs) y = if x == y then Multiple (succ i) x:xs else Single y:Multiple i x:xs
+
+-- Problem 14
+dupli :: [a] -> [a]
+dupli [] = []
+dupli (x:xs) = x:x:dupli xs
+
+dupli' = concatMap (replicate 2)
+
+dupli'' = foldr (\x acc -> x:x:acc) []
+
