@@ -1,5 +1,6 @@
 module Main where
 
+import Data.Ratio
 import Test.QuickCheck
 
 import Lists
@@ -22,7 +23,9 @@ tests11to20 = map (\f l _ -> length l == sum (map int $ f l))                   
               map (\f l i -> let l' = map (if i < 1 then Single else Multiple i) l in
                                       length (f l') == sum (map int l'))              [decodeModified] ++
               map (\f l _ -> length l == sum (map int $ f l))                         [encodeDirect] ++
-              map (\f l i -> i < 0 || length l <= i || l !! i == (f l) !! (i*2))      [dupli, dupli', dupli'']
+              map (\f l i -> i < 0 || length l <= i || l !! i == (f l)   !! (i*2))    [dupli, dupli', dupli''] ++
+              map (\f l i -> i < 1 || length l <= i || l !! i == (f l i) !! (i*i))    [repli, repli', repli''] ++
+              map (\f l i -> i < 1 || let res = f l i in length res == ceiling ((1 - 1%i) * (length l%1)))  [dropEvery, dropEvery']
               where int (Single     _) = 1
                     int (Multiple i _) = i
 

@@ -167,3 +167,26 @@ dupli' = concatMap (replicate 2)
 
 dupli'' = foldr (\x acc -> x:x:acc) []
 
+-- Problem 15
+repli :: [a] -> Int -> [a]
+repli []     _ = []
+repli (x:xs) k = r x k ++ repli xs k
+    where r _ 0 = []
+          r x i
+            | i < 0     = error "negative argument"  -- don't let k < 0 bottom out
+            | otherwise = x:r x (pred i)
+
+repli' = flip (concatMap . replicate)
+
+repli'' xs k = foldr (\x acc -> replicate k x ++ acc) [] xs
+
+-- Problem 16
+dropEvery :: [a] -> Int -> [a]
+dropEvery xs k = go xs k
+    where go []     _ = []
+          go (x:xs) 1 = go xs k
+          go (x:xs) i
+            | i < 1     = error "invalid argument"  -- don't let k < 0 bottom out
+            | otherwise = x:go xs (pred i)
+
+dropEvery' xs k = map snd . filter ((0/=) . (flip mod) k . fst) $ zip [1..] xs
