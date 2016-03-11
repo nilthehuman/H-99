@@ -9,7 +9,7 @@ for private repos. But if you find any of it useful, hey, I'm glad I helped
 someone. :)
 
 All contents of the present repository are released into the public domain.
-See [the LICENSE][2].
+See [the license][2].
 
 [1]: https://wiki.haskell.org/99_questions
-[2]: LICENSE
+[2]: UNLICENSE
