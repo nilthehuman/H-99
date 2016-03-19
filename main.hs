@@ -25,7 +25,11 @@ tests11to20 = map (\f l _ -> length l == sum (map int $ f l))                   
               map (\f l _ -> length l == sum (map int $ f l))                         [encodeDirect] ++
               map (\f l i -> i < 0 || length l <= i || l !! i == (f l)   !! (i*2))    [dupli, dupli', dupli''] ++
               map (\f l i -> i < 1 || length l <= i || l !! i == (f l i) !! (i*i))    [repli, repli', repli''] ++
-              map (\f l i -> i < 1 || let res = f l i in length res == ceiling ((1 - 1%i) * (length l%1)))  [dropEvery, dropEvery']
+              map (\f l i -> i < 1 || let res = f l i in length res == ceiling ((1 - 1%i) * (length l%1)))  [dropEvery, dropEvery'] ++
+              map (\f l i -> i < 0 || let res = f l i in length (fst res) == min i        (length l))       [split, split', split''] ++
+              map (\f l i -> i < 1 || let res = f l i (i*2) in length res <= min (succ i) (length l))       [slice, slice', slice''] ++
+              map (\f l i -> length l <= (succ $ abs i) || let res = f l i in head res == l !! if i < 0 then length l + i else i) [rotate] ++
+              map (\f l i -> i < 1 || length l < i || let res = f l i in fst res == l !! (pred i))          [removeAt, removeAt']
               where int (Single     _) = 1
                     int (Multiple i _) = i
 

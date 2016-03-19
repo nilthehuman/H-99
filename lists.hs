@@ -190,3 +190,51 @@ dropEvery xs k = go xs k
             | otherwise = x:go xs (pred i)
 
 dropEvery' xs k = map snd . filter ((0/=) . (flip mod) k . fst) $ zip [1..] xs
+
+-- Problem 17
+split :: [a] -> Int -> ([a], [a])
+split []     _ = ([], [])
+split xs     0 = ([], xs)
+split (x:xs) n
+    | n < 0     = error "invalid argument"
+    | otherwise = let (front, back) = split xs (pred n) in (x:front, back)
+
+split' xs n = let (front, back) = go xs n [] in (reverse front, back)  -- I hope using reverse doesn't count as cheating
+    where go [] _ acc = (acc, [])
+          go xs 0 acc = (acc, xs)
+          go (x:xs) i acc
+              | i < 0     = error "invalid argument"
+              | otherwise = go xs (pred i) (x:acc)
+
+split'' xs n
+    | n < 0     = error "invalid argument"
+    | otherwise = both (map fst) . spt $ zip xs [0..]
+    where both f (x, y) = (f x, f y)
+          spt []     = ([], [])
+          spt (x:xs) = if n == snd x then ([], x:xs) else let (front, back) = spt xs in (x:front, back)
+
+-- Problem 18
+slice :: [a] -> Int -> Int -> [a]
+slice []     _ _ = []
+slice (x:xs) i k
+    | k < i     = error "invalid arguments"
+    | otherwise = if 1 < i || k < 1 then rest else x:rest
+        where rest = slice xs (pred i) (pred k)
+
+slice' xs i k = map fst . filter (\x -> i <= snd x && snd x <= k) $ zip xs [1..]
+
+slice'' xs i k = drop (pred i) . take k $ xs
+
+-- Problem 19
+rotate :: [a] -> Int -> [a]
+rotate xs n = let n' = if n < 0 then (length xs + n) else n in drop n' xs ++ take n' xs
+
+-- Problem 20
+removeAt :: [a] -> Int -> (a, [a])
+removeAt []     _ = error "empty list"
+removeAt (x:xs) 1 = (x, xs)
+removeAt (x:xs) k
+    | k < 1     = error "invalid argument"
+    | otherwise = let (y, ys) = removeAt xs (pred k) in (y, x:ys)
+
+removeAt' xs k = let (front, back) = split xs (pred k) in (head back, front ++ tail back)
