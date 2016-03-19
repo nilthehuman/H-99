@@ -218,6 +218,7 @@ slice :: [a] -> Int -> Int -> [a]
 slice []     _ _ = []
 slice (x:xs) i k
     | k < i     = error "invalid arguments"
+    | k < 1     = []
     | otherwise = if 1 < i || k < 1 then rest else x:rest
         where rest = slice xs (pred i) (pred k)
 
