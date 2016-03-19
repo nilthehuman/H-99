@@ -33,7 +33,12 @@ tests11to20 = map (\f l _ -> length l == sum (map int $ f l))                   
               where int (Single     _) = 1
                     int (Multiple i _) = i
 
-tests = concat [tests1to10, tests11to20]
+tests21to28 :: [[Int] -> Int -> Bool]
+tests21to28 = map (\f l i -> i < 1 || length l < pred i || let res = f (head l) l i in res !! pred i == head l)                    [insertAt, insertAt'] ++
+              map (\f l i -> i < 1 || length l < 1 || head l < i || let res = f i (head l) in head res == i && last res == head l) [range, range', range'']
+              -- more tests to follow
+
+tests = concat [tests1to10, tests11to20, tests21to28]
 
 testAll :: IO ()
 testAll = mapM_ quickCheck tests

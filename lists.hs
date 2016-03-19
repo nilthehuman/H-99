@@ -239,3 +239,24 @@ removeAt (x:xs) k
     | otherwise = let (y, ys) = removeAt xs (pred k) in (y, x:ys)
 
 removeAt' xs k = let (front, back) = split xs (pred k) in (head back, front ++ tail back)
+
+-- Problem 21
+insertAt :: a -> [a] -> Int -> [a]
+insertAt x xs     1 = x:xs
+insertAt x (y:ys) k
+    | k < 1                  = error "invalid argument"
+    | length (y:ys) < pred k = error "invalid argument"
+    | otherwise              = y : insertAt x ys (pred k)
+
+insertAt' x xs k = take (pred k) xs ++ x : drop (pred k) xs
+
+-- Problem 22
+range :: Int -> Int -> [Int]
+range m n
+    | n < m     = error "invalid arguments"
+    | m == n    = [m]
+    | otherwise = m:range (succ m) n
+
+range' m n = slice [1..] m n  -- won't work for non-positive indices though
+
+range'' m n = take (n-m+1) . drop m $ [0..]  -- won't work for negative indices
