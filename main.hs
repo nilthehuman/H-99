@@ -3,6 +3,8 @@ module Main where
 import Data.Ratio
 import Test.QuickCheck
 
+import Data.List ( nub )
+
 import Lists
 
 -- Tests for Problems 1-10
@@ -34,9 +36,19 @@ tests11to20 = map (\f l _ -> length l == sum (map int $ f l))                   
                     int (Multiple i _) = i
 
 tests21to28 :: [[Int] -> Int -> Bool]
-tests21to28 = map (\f l i -> i < 1 || length l < pred i || let res = f (head l) l i in res !! pred i == head l)                    [insertAt, insertAt'] ++
-              map (\f l i -> i < 1 || length l < 1 || head l < i || let res = f i (head l) in head res == i && last res == head l) [range, range', range'']
-              -- more tests to follow
+tests21to28 = map (\f l i -> i < 1 || length l < i || let res = f (head l) l i in res !! pred i == head l)                         [insertAt, insertAt'] ++
+              map (\f l i -> i < 1 || length l < 1 || head l < i || let res = f i (head l) in head res == i && last res == head l) [range, range', range''] ++
+              map (\f l i -> i < 0 || let len = length $ nub l in len < i || fromIntegral(length $ f i $ nub l) == binomial len i) [combinations] ++
+              map (\f l i -> i < 0 || let len = length $ nub l in len < i || fromIntegral(length $ f [i,len-i] $ nub l) == binomial len i) [group] ++
+              map (\f l i -> let l' = map (flip replicate $ 'x') l in let res = f l' in qsort compare l' == qsort compare res)     [lsort, lfsort]
+
+-- helper functions for the above predicates
+fact :: Integral a => a -> a
+fact 0 = 1
+fact n = n * fact (pred n)
+
+binomial :: Integral a => a -> a -> a
+binomial n k = div (fact n) (fact k * fact (n-k))
 
 tests = concat [tests1to10, tests11to20, tests21to28]
 

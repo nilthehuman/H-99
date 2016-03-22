@@ -8,6 +8,8 @@ import System.IO
 import qualified System.Random as R
 
 import Data.ByteString.Lazy ( hGet )
+import Data.Function ( on )
+import Data.List ( delete, partition, (\\) )
 
 import Unsafe.Coerce  -- um...
 
@@ -283,3 +285,52 @@ rnd_select' :: [a] -> Int -> [a]  -- the type tells you this function is actuall
 rnd_select' xs n = take n . map (xs !!) $ rIndices
     where rs g = let (i, g') = R.randomR (0, pred $ length xs) g in i : rs g'
           rIndices = rs $ R.mkStdGen n  -- use whatever little entropy we're given in n
+
+-- Problem 24
+generic_diff_select :: Eq a => [a] -> Int -> [a]
+generic_diff_select xs n
+    | length xs < n = error "invalid arguments"
+    | n < 0         = error "invalid arguments"
+    | otherwise     = take n $ pick xs rIndices
+    where pick xs (i:is) = let x = xs !! i in x : pick (delete x xs) is
+          rs g k = let (i, g') = R.randomR (0, k) g in i : rs g' (pred k)
+          rIndices = rs (R.mkStdGen n) (pred $ length xs)
+
+diff_select :: Int -> Int -> [Int]
+diff_select n m = generic_diff_select [1..m] n
+
+-- Problem 25
+rnd_permu :: Eq a => [a] -> [a]
+rnd_permu xs = generic_diff_select xs $ length xs
+
+-- Problem 26
+combinations :: Int -> [a] -> [[a]]
+combinations 0 _      = [[]]
+combinations _ []     = []
+combinations k (x:xs) = [ x:cs | cs <- combinations (k-1) xs ] ++ combinations k xs
+
+-- Problem 27
+group :: Eq a => [Int] -> [a] -> [[[a]]]
+group ks xs
+    | sum ks /= length xs = error "invalid arguments"
+    | otherwise           = foldl (flip setApart) [[xs]] . reverse . tail $ ks
+    where setApart k xs     = concatMap (go k) xs
+          go       k (g:gs) = [ (g \\ c) : c : gs | c <- combinations k g ]
+
+-- Problem 28
+-- let's first implement quicksort and go from there
+qsort :: (a -> a -> Ordering) -> [a] -> [a]
+qsort _   []     = []
+qsort cmp (x:xs) = qsort cmp lower ++ [x] ++ qsort cmp rest
+    where (lower, rest) = partition (\y -> LT == cmp y x) xs
+
+-- a)
+lsort :: [[a]] -> [[a]]
+lsort = qsort (compare `on` length)
+        -- this is the same as: qsort (\x y -> compare (length x) (length y))
+
+-- b)
+lfsort :: [[a]] -> [[a]]
+lfsort xs = map fst . qsort (compare `on` snd) $ map (fmap count) xsWithLengths
+    where xsWithLengths = zipWith ((. length) . (,)) xs xs
+          count i       = length . filter ((i==) . snd) $ xsWithLengths
