@@ -1,3 +1,5 @@
+--  !!  ATTENTION: SPOILERS AHEAD  !!  --
+
 {-# LANGUAGE NoMonomorphismRestriction #-}
 
 module Lists where
