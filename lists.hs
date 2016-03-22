@@ -2,6 +2,15 @@
 
 module Lists where
 
+import Control.Monad
+
+import System.IO
+import qualified System.Random as R
+
+import Data.ByteString.Lazy ( hGet )
+
+import Unsafe.Coerce  -- um...
+
 -- Problem 1
 myLast :: [a] -> a
 myLast []     = error "list too short"
@@ -260,3 +269,17 @@ range m n
 range' m n = slice [1..] m n  -- won't work for non-positive indices though
 
 range'' m n = take (n-m+1) . drop m $ [0..]  -- won't work for negative indices
+
+-- Problem 23
+-- now things get a little messy
+rnd_select :: [a] -> Int -> IO [a]
+rnd_select xs n = withBinaryFile source ReadMode $ \random -> replicateM n $ do
+    bs <- hGet random . floor . logBase 2 $ fromIntegral (maxBound :: Int)
+    let i = unsafeCoerce bs :: Int  -- what the hell am I doing?
+    return $ xs !! (i `mod` length xs)
+    where source = "/dev/random"
+
+rnd_select' :: [a] -> Int -> [a]  -- the type tells you this function is actually deterministic
+rnd_select' xs n = take n . map (xs !!) $ rIndices
+    where rs g = let (i, g') = R.randomR (0, pred $ length xs) g in i : rs g'
+          rIndices = rs $ R.mkStdGen n  -- use whatever little entropy we're given in n
