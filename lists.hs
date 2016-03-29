@@ -21,7 +21,7 @@ myLast []     = error "list too short"
 myLast [x]    = x
 myLast (_:xs) = myLast xs
 
-myLast' = foldl (curry snd) undefined
+myLast' = foldl1 (curry snd)
 
 -- Problem 2
 myButLast :: [a] -> a
