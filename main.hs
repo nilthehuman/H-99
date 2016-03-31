@@ -38,6 +38,7 @@ tests11to20 = map (\f l _ -> length l == sum (map int $ f l))                   
 tests21to28 :: [[Int] -> Int -> Bool]
 tests21to28 = map (\f l i -> i < 1 || length l < i || let res = f (head l) l i in res !! pred i == head l)                         [insertAt, insertAt'] ++
               map (\f l i -> i < 1 || length l < 1 || head l < i || let res = f i (head l) in head res == i && last res == head l) [range, range', range''] ++
+              -- no tests for rnd_select, diff_select or rnd_permu
               map (\f l i -> i < 0 || let len = length $ nub l in len < i || fromIntegral(length $ f i $ nub l) == binomial len i) [combinations] ++
               map (\f l i -> i < 0 || let len = length $ nub l in len < i || fromIntegral(length $ f [i,len-i] $ nub l) == binomial len i) [group] ++
               map (\f l i -> let l' = map (flip replicate $ 'x') l in let res = f l' in qsort compare l' == qsort compare res)     [lsort, lfsort]
