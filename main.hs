@@ -41,7 +41,7 @@ tests21to28 = map (\f l i -> i < 1 || length l < i || let res = f (head l) l i i
               -- no tests for rnd_select, diff_select or rnd_permu
               map (\f l i -> i < 0 || let len = length $ nub l in len < i || fromIntegral(length $ f i $ nub l) == binomial len i) [combinations] ++
               map (\f l i -> i < 0 || let len = length $ nub l in len < i || fromIntegral(length $ f [i,len-i] $ nub l) == binomial len i) [group] ++
-              map (\f l i -> let l' = map (flip replicate $ 'x') l in let res = f l' in qsort compare l' == qsort compare res)     [lsort, lfsort]
+              map (\f l _ -> let l' = map (flip replicate $ 'x') l in let res = f l' in qsort compare l' == qsort compare res)     [lsort, lfsort]
 
 -- helper functions for the above predicates
 fact :: Integral a => a -> a

@@ -31,7 +31,7 @@ myButLast [x,_]  = x
 myButLast (_:xs) = myButLast xs
 
 myButLast' = fst . foldl shift (undefined, undefined)
-    where shift (x,y) z = (y,z)
+    where shift (_,y) z = (y,z)
 
 -- pointfree's version
 myButLast'' = fst . foldl ((,) . snd) (undefined, undefined)
@@ -197,7 +197,7 @@ repli'' xs k = foldr (\x acc -> replicate k x ++ acc) [] xs
 dropEvery :: [a] -> Int -> [a]
 dropEvery xs k = go xs k
     where go []     _ = []
-          go (x:xs) 1 = go xs k
+          go (_:xs) 1 = go xs k
           go (x:xs) i
             | i < 1     = error "invalid argument"  -- don't let k < 0 bottom out
             | otherwise = x:go xs (pred i)
