@@ -4,9 +4,9 @@
 
 module Lists where
 
-import Control.Monad
+import Control.Monad ( replicateM )
 
-import System.IO
+import System.IO ( withBinaryFile, IOMode(..) )
 import qualified System.Random as R
 
 import Data.ByteString.Lazy ( hGet )
