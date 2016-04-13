@@ -47,13 +47,7 @@ elementAt' list i = fst $ foldl pick (undefined, i) list
             | i == 1    = (x, 0)
             | otherwise = (z, i-1)
 
--- pointfree's suggestion, wow
-elementAt'' = (fst .) . flip (foldl pick . (,) undefined)
-    where pick (z, i) x
-            | i == 1    = (x, 0)
-            | otherwise = (z, i-1)
-
-elementAt''' list i = snd . head . filter ((i==) . fst) $ zip [1,2..] list
+elementAt'' list i = snd . head . filter ((i==) . fst) $ zip [1,2..] list
 
 -- Problem 4
 myLength :: [a] -> Int

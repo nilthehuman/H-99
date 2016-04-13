@@ -14,7 +14,7 @@ import Lists
 tests1to10 :: [[Int] -> Int -> Bool]
 tests1to10 = map (\f l x -> f (l ++ [x]          ) == x)                   [   myLast,    myLast'] ++
              map (\f l x -> f (l ++ [x,undefined]) == x)                   [myButLast, myButLast', myButLast''] ++
-             map (\f l i -> i < 1 || length l < i  || f l i == l !! (i-1)) [elementAt, elementAt', elementAt'', elementAt'''] ++
+             map (\f l i -> i < 1 || length l < i  || f l i == l !! (i-1)) [elementAt, elementAt', elementAt''] ++
              map (\f l _ -> f l == length  l)                              [ myLength,  myLength',  myLength'',  myLength'''] ++
              map (\f l _ -> f l == reverse l)                              [myReverse, myReverse', myReverse''] ++
              map (\f l i -> i < 0 || length l <= i || not (f l) || l !! i == l !! (length l - i - 1))             [isPalindrome, isPalindrome', isPalindrome''] ++
