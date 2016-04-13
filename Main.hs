@@ -5,6 +5,9 @@ import Test.QuickCheck
 
 import Data.List ( nub )
 
+import Control.Arrow ( first )
+
+import Arithmetic
 import Lists
 
 -- Tests for Problems 1-10
@@ -43,6 +46,15 @@ tests21to28 = map (\f l i -> i < 1 || length l < i || let res = f (head l) l i i
               map (\f l i -> i < 0 || let len = length $ nub l in len < i || fromIntegral(length $ f [i,len-i] $ nub l) == binomial len i) [group] ++
               map (\f l _ -> let l' = map (flip replicate $ 'x') l in let res = f l' in qsort compare l' == qsort compare res)     [lsort, lfsort]
 
+tests31to41 :: [[Int] -> Int -> Bool]
+tests31to41 = map (\f _ _ -> f 2377  == True)                                                                    [isPrime, isPrime'] ++
+              map (\f l x -> null l || let y = (head l) in 0 == x || 0 == y || f x y <= min (abs x) (abs y))     [myGCD] ++
+              map (\f _ _ -> f 35 64 == True)                                                                    [coprime, coprime'] ++
+              map (\f _ x -> x < 2  || f x < x)                                                                  [totient, totient', totient'', totientImproved] ++
+              map (\f _ x -> x < 1  || (product . f $ x) == x)                                                   [primeFactors, primeFactors', primeFactors''] ++
+              map (\f _ x -> x < 1  || (product . map (floor . uncurry (^^) . first fromIntegral) . f $ x) == x) [primeFactorsMult, primeFactorsMult']
+              -- more tests to follow
+
 -- helper functions for the above predicates
 fact :: Integral a => a -> a
 fact 0 = 1
@@ -51,7 +63,7 @@ fact n = n * fact (pred n)
 binomial :: Integral a => a -> a -> a
 binomial n k = div (fact n) (fact k * fact (n-k))
 
-tests = concat [tests1to10, tests11to20, tests21to28]
+tests = concat [tests1to10, tests11to20, tests21to28, tests31to41]
 
 testAll :: IO ()
 testAll = mapM_ quickCheck tests
