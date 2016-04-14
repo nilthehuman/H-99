@@ -36,9 +36,7 @@ isPrime' x
 
 -- Problem 32
 myGCD :: Integral a => a -> a -> a
-myGCD x y
-    | ax < ay   = helper ax ay
-    | otherwise = helper ay ax
+myGCD x y = helper (min ax ay) (max ax ay)
     where (ax, ay) = (abs x, abs y)
           helper x 0 = x
           helper 0 y = y
