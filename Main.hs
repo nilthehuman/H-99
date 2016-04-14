@@ -52,8 +52,11 @@ tests31to41 = map (\f _ _ -> f 2377  == True)                                   
               map (\f _ _ -> f 35 64 == True)                                                                    [coprime, coprime'] ++
               map (\f _ x -> x < 2  || f x < x)                                                                  [totient, totient', totient'', totientImproved] ++
               map (\f _ x -> x < 1  || (product . f $ x) == x)                                                   [primeFactors, primeFactors', primeFactors''] ++
-              map (\f _ x -> x < 1  || (product . map (floor . uncurry (^^) . first fromIntegral) . f $ x) == x) [primeFactorsMult, primeFactorsMult']
-              -- more tests to follow
+              map (\f _ x -> x < 1  || (product . map (floor . uncurry (^^) . first fromIntegral) . f $ x) == x) [primeFactorsMult, primeFactorsMult'] ++
+              map (\f l x -> null l || let y = head l in all isPrime (f x y))                                    [primesR, primesR'] ++
+              map (\f _ x -> x < 4  || odd x || let (p,r) = f x in isPrime p && isPrime r && p + r == x)         [goldbach] ++
+              map (\f l x -> null l || let y = head l in x < 4 || y < 4 || odd x || odd y ||
+                                                               (all (\(p,r) -> isPrime p && isPrime r) $ f x y)) [goldbachList, \x y -> goldbachList' x y 50]
 
 -- helper functions for the above predicates
 fact :: Integral a => a -> a

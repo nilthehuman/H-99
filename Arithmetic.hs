@@ -4,6 +4,8 @@
 
 module Arithmetic where
 
+import Data.List           ( (\\) )
+
 import Control.Applicative ( liftA2 )
 import Control.Arrow       ( (&&&) )
 
@@ -122,4 +124,28 @@ totientImproved = product . map (floor . formula) . primeFactorsMult
 --                    == 4
 
 -- totientImproved turns out to perform many orders of magnitude better
+
+-- Problem 39
+primesR :: Integral a => a -> a -> [a]
+primesR m n = filter isPrime [min m n .. max m n]  -- I mean this should still blow the sieve method away, right?
+
+primesR' m n = foldr deleteDivBy xs candidates
+        where
+            deleteDivBy c = filter ( \x -> (c == abs x || not (c `divides` x)) )
+            xs            = [min m n .. max m n] \\ [-1,0,1]
+            candidates    = 2:[3,5..maxCandidate]
+            maxCandidate  = floor . sqrt . fromIntegral $ max (abs m) (abs n)
+
+-- Problem 40
+goldbach :: Integral a => a -> (a, a)
+goldbach x | x < 4 = error "invalid argument"
+goldbach x | odd x = error "invalid argument"
+goldbach x = let p = if good 2 then 2 else until good (+2) 3 in (p, x-p)
+    where good p = isPrime p && isPrime (x-p)
+
+-- Problem 41
+goldbachList :: Integral a => a -> a -> [(a, a)]
+goldbachList m n = map goldbach $ filter even [min m n .. max m n]
+
+goldbachList' m n min = filter ( \(a,b) -> min < a && min < b ) $ goldbachList m n
 
