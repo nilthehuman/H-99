@@ -38,7 +38,6 @@ isPrime' x
 myGCD :: Integral a => a -> a -> a
 myGCD x y = helper (min ax ay) (max ax ay)
     where (ax, ay) = (abs x, abs y)
-          helper x 0 = x
           helper 0 y = y
           helper x y = helper (y `mod` x) x
           -- this can also be expressed as:
