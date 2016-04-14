@@ -1,6 +1,6 @@
 # Some Solutions to [Ninety-Nine Haskell Problems][1]
 
-This repo holds my attempts to solve all 99 exercises in [H-99][1]
+This repo holds my attempts to solve all exercises in [H-99][1]
 and also kind of serves to document my progress to Haskell enlightenment
 along the way.
 
