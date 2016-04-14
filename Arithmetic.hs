@@ -18,8 +18,8 @@ divides c x = x `mod` c == 0
 
 -- Problem 31
 isPrime :: Integral a => a -> Bool
-isPrime 1 = False
-isPrime 2 = True  -- this allows us to make `candidates' below general
+isPrime x | abs x == 2 = True  -- this allows us to make `candidates' below general
+isPrime x | abs x <  2 = False
 isPrime x = not . any (`divides` abs x) $ candidates
         where
             candidates    = 2:[3,5..maxCandidate]
