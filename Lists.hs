@@ -15,6 +15,9 @@ import Data.List ( delete, partition, (\\) )
 
 import Unsafe.Coerce  -- um...
 
+{-# ANN module "HLint: ignore Use fmap"    #-}
+{-# ANN module "HLint: ignore Use mappend" #-}
+
 -- Problem 1
 myLast :: [a] -> a
 myLast []     = error "list too short"

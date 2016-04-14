@@ -9,6 +9,8 @@ import Control.Arrow       ( (&&&) )
 
 import Lists ( consumeEqual )
 
+{-# ANN module "HLint: ignore Use fmap" #-}
+
 divides :: Integral a => a -> a -> Bool
 divides c x = x `mod` c == 0
 
