@@ -144,13 +144,13 @@ data ListElem a = Single a | Multiple Int a
 
 encodeModified :: Eq a => [a] -> [ListElem a]
 encodeModified = consumeEqual (\acc front -> acc ++ munge front)
-    where munge [x]    = [Single x]
+    where munge [x]    = [Single                   x]
           munge (x:xs) = [Multiple (length (x:xs)) x]
           munge _      = error "this should never happen"
 
 -- this should perform better than encodeModified
 encodeModified' = reverse . consumeEqual (\acc front -> munge front : acc)
-    where munge [x]    = Single x
+    where munge [x]    = Single                   x
           munge (x:xs) = Multiple (length (x:xs)) x
           munge _      = error "this should never happen"
 
@@ -165,8 +165,8 @@ encodeDirect :: Eq a => [a] -> [ListElem a]
 encodeDirect []     = []
 encodeDirect (x:xs) = reverse $ foldl step [Single x] xs
     -- this feels clumsy compared to encodeModified
-    where step (Single x:xs)     y = if x == y then Multiple 2 x:xs else Single y:Single x:xs
-          step (Multiple i x:xs) y = if x == y then Multiple (succ i) x:xs else Single y:Multiple i x:xs
+    where step (Single     x : xs) y = if x == y then Multiple 2        x : xs else Single y : Single     x : xs
+          step (Multiple i x : xs) y = if x == y then Multiple (succ i) x : xs else Single y : Multiple i x : xs
 
 -- Problem 14
 dupli :: [a] -> [a]
