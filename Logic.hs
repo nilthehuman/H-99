@@ -80,8 +80,8 @@ huffmann xs = extract $ until done go (prepare 0 xs)
 
           go xs      = let (m2,r') = (min2 &&& rNext) xs in
                        map (\(a,b,c,r) -> if r == fst m2 then (a,b,'0':c,r') else
-                                          if r == snd m2 then (a,b,'1':c,r')
-                                                         else (a,b,    c,r)) xs
+                                          if r == snd m2 then (a,b,'1':c,r') else
+                                                              (a,b,    c,r )) xs
           root (_,_,_,r) = r
           rNext      = succ . maximum . map root
           minRoot    = root . minimumBy (compare `on` \(_,b,_,_) -> b)
@@ -89,8 +89,8 @@ huffmann xs = extract $ until done go (prepare 0 xs)
           group      = consume (\acc fr@((a,_,c,r):_) -> (a, sum . map (\(_,b,_,_) -> b) $ fr, c, r) : acc)
                                (\bk@(x:_) -> partition ((root x ==) . root) bk)
                                []
-          min2 xs    = let gs  = group xs in
-                       let min = minRoot gs in (min, minRoot . filter (\g -> min /= root g) $ gs)
+          min2 xs    = let gs  = group   xs in
+                       let min = minRoot gs in (min, minRoot [g | g <- gs, min /= root g])
 
           done []    = True
           done list  = let (r:rs) = map root list in all (r==) rs
