@@ -156,3 +156,28 @@ hbalanced = all (\ (Branch _ l r) -> abs (height l - height r) <= 1) . subTrees
 hbalTreeNodes :: Int -> a -> [Tree a]
 hbalTreeNodes = filter hbalanced .: allTrees
 
+-- Problem 61
+countLeaves :: Tree a -> Int
+countLeaves  Empty                 = 0
+countLeaves (Branch _ Empty Empty) = 1
+countLeaves (Branch _ l     r    ) = countLeaves l + countLeaves r
+
+-- Problem 61A
+leaves :: Tree a -> [a]
+leaves  Empty                 = []
+leaves (Branch x Empty Empty) = [x]
+leaves (Branch x l     r    ) = leaves l ++ leaves r
+
+-- Problem 62
+internals :: Tree a -> [a]
+internals  Empty                 = []
+internals (Branch x Empty Empty) = []
+internals (Branch x l     r)     = x : internals l ++ internals r
+
+-- Problem 63
+atLevel :: Int -> Tree a -> [a]
+atLevel k  _  |  k < 0   = error "nope"
+atLevel _  Empty         = []
+atLevel 0 (Branch x _ _) = [x]
+atLevel k (Branch _ l r) = atLevel (pred k) l ++ atLevel (pred k) r
+
