@@ -11,7 +11,7 @@ import qualified System.Random as R
 
 import Data.ByteString.Lazy ( hGet )
 import Data.Function ( on )
-import Data.List ( delete, partition, (\\) )
+import Data.List ( delete, partition, unfoldr, (\\) )
 
 import Unsafe.Coerce  -- um...
 
@@ -108,6 +108,11 @@ consume :: (z -> [a] -> z) -> ([a] -> ([a], [a])) -> z -> [a] -> z
 consume _ _ acc []   = acc
 consume f g acc list = let (front, back) = g list in
                        consume f g (f acc front) back
+
+-- a cleaner implementation by Gesh using standard combinators
+consume' :: (z -> b -> z) -> ([a] -> (b, [a])) -> z -> [a] -> z
+consume' f g a = foldl f a . chunk g
+chunk g = unfoldr (fmap g . (\xs -> if null xs then Nothing else Just xs))
 
 -- a specialization of the above
 consumeEqual gather = consume gather split []

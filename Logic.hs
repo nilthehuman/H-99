@@ -2,14 +2,14 @@
 
 module Logic where
 
-import Data.List        ( intercalate, minimumBy, partition )
+import Data.List        ( intercalate, minimumBy, partition, sortBy )
 import Data.Function    ( on )
 import Data.Composition ( (.:) )
 
 import Control.Arrow    ( (&&&) )
 import Control.Monad    ( replicateM )
 
-import Lists
+import Lists            ( chunk, consume )
 
 {-# ANN module "HLint: ignore Use fmap"    #-}
 {-# ANN module "HLint: ignore Use mappend" #-}
@@ -74,27 +74,23 @@ gray x = let grayPrev = gray (pred x) in map ('0':) grayPrev ++ map ('1':) (reve
 
 -- Problem 50
 huffmann :: Eq a => [(a, Int)] -> [(a, String)]
-huffmann xs = extract $ until done go (prepare 0 xs)
+huffmann xs = extract xs . until done go $ prepare 0 xs
     where prepare _ []         = []
-          prepare r ((a,b):xs) = (a, b, "", r) : prepare (succ r) xs
+          prepare r ((a,b):xs) = (a,b,"",r) : prepare (succ r) xs
 
-          go xs      = let (m2,r') = (min2 &&& rNext) xs in
-                       map (\(a,b,c,r) -> if r == fst m2 then (a,b,'0':c,r') else
-                                          if r == snd m2 then (a,b,'1':c,r') else
-                                                              (a,b,    c,r )) xs
+          go xs = map (update '0') m1 ++ map (update '1') m2 ++ concat ms
+              where (m1:m2:ms) = min2 xs
+                    update p (c,w,ps,_) = (c,w,p:ps,r')
+                    r' = succ . maximum . map root $ xs
           root (_,_,_,r) = r
-          rNext      = succ . maximum . map root
-          minRoot    = root . minimumBy (compare `on` \(_,b,_,_) -> b)
-          -- I don't like the following two much, not very elegant
-          group      = consume (\acc fr@((a,_,c,r):_) -> (a, sum . map (\(_,b,_,_) -> b) $ fr, c, r) : acc)
-                               (\bk@(x:_) -> partition ((root x ==) . root) bk)
-                               []
-          min2 xs    = let gs  = group   xs in
-                       let min = minRoot gs in (min, minRoot [g | g <- gs, min /= root g])
+          gatherRoots = chunk $ \ l@(x:_) -> partition (\y -> root x == root y) l
+          min2 = map fst . sortOn snd . map (id &&& flatten) . gatherRoots
+              where flatten = sum . map weight
+                    weight (_,w,_,_) = w
+                    sortOn = sortBy . (compare `on`)
 
-          done []    = True
-          done list  = let (r:rs) = map root list in all (r==) rs
-          order      = map fst xs
-          extract xs = map (\a -> lookup' a xs) order
-          lookup' k ((a,_,c,_):xs) = if k == a then (a,c) else lookup' k xs
+          done = (<=1) . length . gatherRoots
+          extract xs zs = map (\a -> lookup' a zs) order
+              where order = map fst xs
+                    lookup' k ((a,_,c,_):zs) = if k == a then (a,c) else lookup' k zs
 
