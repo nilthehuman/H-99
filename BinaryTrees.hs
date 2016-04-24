@@ -60,7 +60,6 @@ allPaths k = let prevPaths = allPaths (pred k) in [Left x | x <- prevPaths] ++ [
 allTrees :: Int -> a -> [Tree a]
 allTrees n _ | n < 0 = error "nope"
 allTrees 0 _ = [Empty]
-allTrees 1 x = [leaf x]
 allTrees n x = let half = [Branch x l r | m <- [0..(n-1)`div`2], l <- allTrees (n-m-1) x, r <- allTrees m x]
                in half ++ map flip [t | t <- half, not (exactlyBalanced t)]
 
