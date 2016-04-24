@@ -124,7 +124,7 @@ cbalTree n x = filter cbalanced candidates
           complete t (p:ps) = complete (replace t (leaf x) p) ps
 
 -- Use brute force (performs awful in comparison)
-cbalTree' n x = filter cbalanced $ allTrees n x
+cbalTree' = filter cbalanced .: allTrees
 
 -- Problem 56
 symmetric :: Tree a -> Bool
