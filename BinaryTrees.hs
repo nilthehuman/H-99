@@ -111,7 +111,7 @@ isTree :: Tree a -> Bool
 isTree = const True
 
 -- Problem 55
-cbalTree :: Eq a => Int -> a -> [Tree a]
+cbalTree :: Int -> a -> [Tree a]
 cbalTree n _ | n < 0 = error "nope"
 cbalTree n x = filter cbalanced candidates
     where top         = fullTree topLevels x
