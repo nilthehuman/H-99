@@ -2,10 +2,13 @@
 
 module BinaryTrees where
 
-import Prelude hiding ( flip, Left, Right )
+import Prelude hiding ( Left, Right, flip, insert )
+
 import Data.Function  ( on )
 import Data.List      ( nubBy )
 import Control.Monad  ( void )
+
+import Data.Composition ( (.:) )
 
 import Lists          ( combinations )
 
@@ -20,9 +23,9 @@ data Tree a = Empty | Branch { label :: a, left :: Tree a, right :: Tree a }
 leaf :: a -> Tree a
 leaf x = Branch x Empty Empty
 
-depth :: Tree a -> Int
-depth  Empty         = 0
-depth (Branch _ l r) = 1 + max (depth l) (depth r)
+height :: Tree a -> Int
+height  Empty         = 0
+height (Branch _ l r) = 1 + max (height l) (height r)
 
 flip :: Tree a -> Tree a
 flip  Empty         = Empty
@@ -32,14 +35,8 @@ mirror :: Tree a -> Tree a
 mirror  Empty         = Empty
 mirror (Branch x l r) = Branch x (mirror r) (mirror l)
 
-twin :: Tree a -> Bool
-twin t = let t' = void t in t' == flip t'
-
-symm :: Tree a -> Bool
-symm t = let t' = void t in t' == mirror t'
-
 full :: Tree a -> Bool
-full t = t `shapeEq` fullTree (depth t) ()
+full t = t `shapeEq` fullTree (height t) ()
 
 instance Functor Tree where
     fmap _  Empty         = Empty
@@ -62,6 +59,14 @@ allTrees n _ | n < 0 = error "nope"
 allTrees 0 _ = [Empty]
 allTrees n x = let half = [Branch x l r | m <- [0..(n-1)`div`2], l <- allTrees (n-m-1) x, r <- allTrees m x]
                in half ++ map flip [t | t <- half, not (exactlyBalanced t)]
+
+allTreesOfMaxHeight :: Int -> a -> [Tree a]
+allTreesOfMaxHeight 0 _ = [Empty]
+allTreesOfMaxHeight h x = let prevTrees = allTreesOfMaxHeight (pred h) x in
+                          Empty : [Branch x l r | l <- prevTrees, r <- prevTrees]
+
+allTreesOfHeight :: Int -> a -> [Tree a]
+allTreesOfHeight h x = filter ((h ==) . height) $ allTreesOfMaxHeight h x
 
 fullTree :: Int -> a -> Tree a
 fullTree l _ | l < 0 = error "nope"
@@ -120,4 +125,34 @@ cbalTree n x = filter cbalanced candidates
 
 -- Use brute force (performs awful in comparison)
 cbalTree' n x = filter cbalanced $ allTrees n x
+
+-- Problem 56
+symmetric :: Tree a -> Bool
+symmetric t = t `shapeEq` mirror t
+
+-- Problem 57
+construct :: Ord a => [a] -> Tree a
+construct = foldl insert Empty
+
+insert :: Ord a => Tree a -> a -> Tree a
+insert    Empty         x = leaf x
+insert t@(Branch y l r) x
+    | x < y     = Branch y (insert l x) r
+    | y < x     = Branch y l (insert r x)
+    | otherwise = t
+
+-- Problem 58
+-- Prolog might not make these things very easy but Haskell does
+symCbalTrees :: Int -> a -> [Tree a]
+symCbalTrees = filter symmetric .: cbalTree
+
+-- Problem 59
+hbalTree :: Int -> a -> [Tree a]
+hbalTree = filter hbalanced .: allTreesOfHeight
+
+hbalanced = all (\ (Branch _ l r) -> abs (height l - height r) <= 1) . subTrees
+
+-- Problem 60
+hbalTreeNodes :: Int -> a -> [Tree a]
+hbalTreeNodes = filter hbalanced .: allTrees
 
