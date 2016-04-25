@@ -14,7 +14,6 @@ import Lists          ( combinations )
 
 {-# ANN module "HLint: ignore Use fmap"    #-}
 {-# ANN module "HLint: ignore Use mappend" #-}
-{-# ANN module "HLint: ignore Use =<<"     #-}
 
 data Tree a = Empty | Branch { label :: a, left :: Tree a, right :: Tree a }
               deriving (Show, Eq)
