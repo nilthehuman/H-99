@@ -5,6 +5,7 @@
 module Arithmetic where
 
 import Data.List           ( (\\) )
+import Data.Composition    ( (.:) )
 
 import Control.Applicative ( liftA2 )
 import Control.Arrow       ( (&&&) )
@@ -47,7 +48,7 @@ myGCD x y = helper (min ax ay) (max ax ay)
 
 -- Problem 33
 coprime :: Integral a => a -> a -> Bool
-coprime = ((.).(.)) (1 ==) myGCD  -- the "startled owl" combinator
+coprime = (1 ==) .: myGCD
 
 -- this one's a tad slower
 coprime' x y = not $ any ((`divides` x) `higherAnd` (`divides` y)) candidates
