@@ -3,12 +3,16 @@ module Main where
 import Data.Ratio
 import Test.QuickCheck
 
-import Data.List ( nub )
+import Data.List          ( maximumBy, minimumBy, nub, nubBy )
+import Data.Function      ( on )
+import Data.Composition   ( (.:) )
 
-import Control.Arrow ( first )
+import Control.Arrow      ( first, (&&&) )
 
 import Arithmetic
+import BinaryTrees hiding ( flip )
 import Lists
+import Logic
 
 -- Tests for Problems 1-10
 tests1to10 :: [[Int] -> Int -> Bool]
@@ -58,6 +62,25 @@ tests31to41 = map (\f _ _ -> f 2377  == True)                                   
               map (\f l x -> null l || let y = head l in x < 4 || y < 4 || odd x || odd y ||
                                                                (all (\(p,r) -> isPrime p && isPrime r) $ f x y)) [goldbachList, \x y -> goldbachList' x y 50]
 
+tests46to50 :: [[Int] -> Int -> Bool]
+tests46to50 = map (\f _ _ ->          all (\(x,y,z) ->        f x y       == z      ) (table            f) )     [myAnd, myOr, nand, nor, xor, equ, impl] ++
+              map (\f _ i -> i < 1 || all (\ xs     -> foldl1 f (init xs) == last xs) (tablen i (foldl1 f)))     [myAnd, myOr, nand, nor, xor, equ, impl] ++
+              map (\f _ i -> i < 0 || 10 < i || (uncurry (==) . (floor . (2^^) &&& length . f) $ i))                                    [gray] ++
+              map (\f l _ -> null l || let l' = f (zip [0..] l) in all ((floor(2^^(length l - 1)) >) . fromIntegral . length . snd) l') [huffmann]
+
+tests54to60 :: [[Int] -> Int -> Bool]
+tests54to60 = map (\f _ i -> f (allTrees 10 () !! i) == True)                [isTree] ++
+              map (\f _ i -> i < 0 || 10 < i || all cbalanced (f i ()))      [cbalTree, cbalTree'] ++
+              map (\f _ i -> i < 0 || 12 < i || f (fullTree i ()))           [symmetric] ++
+              map (\f l _ -> length (nub l) == size (f l))                   [construct] ++
+              map (\f _ i -> i < 0 || 10 < i || all (uncurry (&&) . (cbalanced &&& symmetric)) (f i ())) [symCbalTrees] ++
+              map (\f _ i -> i < 0 ||  4 < i || all hbalanced (f i ()))      [hbalTree, hbalTreeNodes]
+
+tests61to69 :: [[Int] -> Int -> Bool]
+tests61to69 = map (\f l _ ->          let t = construct l in f   t <= size t)       [countLeaves, length . leaves, length . internals] ++
+              map (\f l i -> i < 0 || let t = construct l in f i t <= floor (2^^i)) [length .: atLevel]
+              -- more tests to come
+
 -- helper functions for the above predicates
 fact :: Integral a => a -> a
 fact 0 = 1
@@ -66,7 +89,7 @@ fact n = n * fact (pred n)
 binomial :: Integral a => a -> a -> a
 binomial n k = div (fact n) (fact k * fact (n-k))
 
-tests = concat [tests1to10, tests11to20, tests21to28, tests31to41]
+tests = concat [tests1to10, tests11to20, tests21to28, tests31to41, tests46to50, tests54to60, tests61to69]
 
 testAll :: IO ()
 testAll = mapM_ quickCheck tests
