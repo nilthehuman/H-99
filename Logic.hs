@@ -24,19 +24,19 @@ myOr False False = False
 myOr _     _     = True
 
 nand :: Bool -> Bool -> Bool
-nand x y = not $ myAnd x y
+nand = not .: myAnd
 
 nor :: Bool -> Bool -> Bool
-nor  x y = not $ myOr  x y
+nor  = not .: myOr
 
 xor :: Bool -> Bool -> Bool
-xor x y = x /= y
+xor  = (/=)
 
 equ :: Bool -> Bool -> Bool
-equ x y = x == y
+equ  = (==)
 
 impl :: Bool -> Bool -> Bool
-impl x y = myOr (not x) y
+impl = myOr . not
 
 table :: (Bool -> Bool -> Bool) -> [(Bool, Bool, Bool)]
 table f = [ (x, y, f x y) | x <- [True,False], y <- [True,False] ]
