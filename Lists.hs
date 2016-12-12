@@ -4,6 +4,7 @@
 
 module Lists where
 
+import Control.Arrow ( (&&&) )
 import Control.Monad ( replicateM )
 
 import System.IO ( withBinaryFile, IOMode(..) )
@@ -58,11 +59,9 @@ myLength = foldr ((succ .) . curry snd) 0
 
 myLength' = sum . map (const 1)
 
-myLength'' []   = 0
-myLength'' list = fst . last $ zip [1,2..] list
+myLength'' = fst . last . zip [0,1..] . (undefined:)
 
-myLength''' []   = 0
-myLength''' list = last $ zipWith (curry fst) [1,2..] list
+myLength''' = last . zipWith (curry fst) [0,1..] . (undefined:)
 
 -- Problem 5
 myReverse :: [a] -> [a]
@@ -77,7 +76,7 @@ myReverse'' (x:xs) = myReverse'' xs ++ [x]
 
 -- Problem 6
 isPalindrome :: Eq a => [a] -> Bool
-isPalindrome l = l == reverse l
+isPalindrome = uncurry (==) . (id &&& reverse)
 
 isPalindrome' l = let halflen = fromIntegral (length l) * 0.5 in
                   let (front, back) = (take (floor halflen) l, drop (ceiling halflen) l) in
@@ -305,7 +304,7 @@ diff_select n m = generic_diff_select [1..m] n
 
 -- Problem 25
 rnd_permu :: Eq a => [a] -> [a]
-rnd_permu xs = generic_diff_select xs . length $ xs
+rnd_permu = generic_diff_select xs . length
 
 -- Problem 26
 combinations :: Int -> [a] -> [[a]]
