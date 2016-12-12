@@ -45,7 +45,7 @@ elementAt (x:_)  1 = x
 elementAt (_:xs) i = elementAt xs (i-1)
 elementAt _      _ = error "out of bounds"
 
-elementAt' list i = fst $ foldl pick (undefined, i) list
+elementAt' list i = fst . foldl pick (undefined, i) $ list
     where pick (z, i) x
             | i == 1    = (x, 0)
             | otherwise = (z, i-1)
@@ -168,7 +168,7 @@ decodeModified = concatMap demunge
 -- Problem 13
 encodeDirect :: Eq a => [a] -> [ListElem a]
 encodeDirect []     = []
-encodeDirect (x:xs) = reverse $ foldl step [Single x] xs
+encodeDirect (x:xs) = reverse . foldl step [Single x] $ xs
     -- this feels clumsy compared to encodeModified
     where step (Single     x : xs) y = if x == y then Multiple 2        x : xs else Single y : Single     x : xs
           step (Multiple i x : xs) y = if x == y then Multiple (succ i) x : xs else Single y : Multiple i x : xs
@@ -287,7 +287,7 @@ rnd_select xs n = withBinaryFile source ReadMode $ \random -> replicateM n $ do
 
 rnd_select' :: [a] -> Int -> [a]  -- the type tells you this function is actually deterministic
 rnd_select' xs n = take n . map (xs !!) $ rIndices
-    where rs g = let (i, g') = R.randomR (0, pred $ length xs) g in i : rs g'
+    where rs g = let (i, g') = R.randomR (0, pred . length $ xs) g in i : rs g'
           rIndices = rs $ R.mkStdGen n  -- use whatever little entropy we're given in n
 
 -- Problem 24
@@ -295,17 +295,17 @@ generic_diff_select :: Eq a => [a] -> Int -> [a]
 generic_diff_select xs n
     | length xs < n = error "invalid arguments"
     | n < 0         = error "invalid arguments"
-    | otherwise     = take n $ pick xs rIndices
+    | otherwise     = take n . pick xs $ rIndices
     where pick xs (i:is) = let x = xs !! i in x : pick (delete x xs) is
           rs g k = let (i, g') = R.randomR (0, k) g in i : rs g' (pred k)
-          rIndices = rs (R.mkStdGen n) (pred $ length xs)
+          rIndices = rs (R.mkStdGen n) (pred . length $ xs)
 
 diff_select :: Int -> Int -> [Int]
 diff_select n m = generic_diff_select [1..m] n
 
 -- Problem 25
 rnd_permu :: Eq a => [a] -> [a]
-rnd_permu xs = generic_diff_select xs $ length xs
+rnd_permu xs = generic_diff_select xs . length $ xs
 
 -- Problem 26
 combinations :: Int -> [a] -> [[a]]

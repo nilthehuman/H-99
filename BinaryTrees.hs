@@ -118,7 +118,7 @@ cbalTree n x = filter cbalanced candidates
           bottomNodes = n - floor (fullSize topLevels)
           candidates
             | 0 == bottomNodes = [top]
-            | otherwise        = map (complete top) (combinations bottomNodes $ allPaths topLevels)
+            | otherwise        = map (complete top) (combinations bottomNodes . allPaths $ topLevels)
           complete t []     = t
           complete t (p:ps) = complete (replace t (leaf x) p) ps
 

@@ -53,7 +53,7 @@ coprime :: Integral a => a -> a -> Bool
 coprime = (1 ==) .: myGCD
 
 -- this one's a tad slower
-coprime' x y = not $ any ((`divides` x) `higherAnd` (`divides` y)) candidates
+coprime' x y = not . any ((`divides` x) `higherAnd` (`divides` y)) $ candidates
     where
           higherAnd    = liftA2 (&&)
           candidates   = 2:[3,5..maxCandidate]
@@ -148,7 +148,7 @@ goldbach x = let p = if good 2 then 2 else until good (+2) 3 in (p, x-p)
 
 -- Problem 41
 goldbachList :: Integral a => a -> a -> [(a, a)]
-goldbachList m n = map goldbach $ filter even [min m n .. max m n]
+goldbachList m n = map goldbach . filter even $ [min m n .. max m n]
 
 goldbachList' m n min = filter ( \(a,b) -> min < a && min < b ) $ goldbachList m n
 
