@@ -19,12 +19,14 @@ divides c x = x `mod` c == 0
 
 -- Problem 31
 isPrime :: Integral a => a -> Bool
-isPrime x | abs x == 2 = True  -- this allows us to make `candidates' below general
-isPrime x | abs x <  2 = False
-isPrime x = not . any (`divides` abs x) $ candidates
-        where
-            candidates    = 2:[3,5..maxCandidate]
-            maxCandidate  = floor . sqrt . fromIntegral $ abs x
+isPrime x
+    | ax == 2 = True  -- this allows us to make `candidates' below general
+    | ax <  2 = False
+    | otherwise = not . any (`divides` ax) $ candidates
+    where
+      ax            = abs x
+      candidates    = 2:[3,5..maxCandidate]
+      maxCandidate  = floor . sqrt . fromIntegral $ ax
 
 -- sieve algorithm; this version is way slower though and has terrible space cost
 isPrime' x
