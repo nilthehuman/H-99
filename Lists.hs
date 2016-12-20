@@ -4,6 +4,7 @@
 
 module Lists where
 
+import Control.Applicative ( (<*>) )
 import Control.Arrow ( (&&&) )
 import Control.Monad ( replicateM )
 
@@ -304,7 +305,7 @@ diff_select n m = generic_diff_select [1..m] n
 
 -- Problem 25
 rnd_permu :: Eq a => [a] -> [a]
-rnd_permu = generic_diff_select xs . length
+rnd_permu = generic_diff_select <*> length
 
 -- Problem 26
 combinations :: Int -> [a] -> [[a]]
