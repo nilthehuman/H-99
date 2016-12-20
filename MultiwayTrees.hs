@@ -34,3 +34,19 @@ ipl   (Node _ []) = 0
 ipl t@(Node x ts) = go 1 t
     where go d = sum . map ((+d) . go (d+1)) . subForest
 
+-- Problem 72
+bottomUp :: Tree a -> [a]
+bottomUp = reverse . go []
+    where go xs (Node x ts) = x : concatMap (go xs) ts
+
+-- Problem 73
+displayLisp :: Tree Char -> String
+displayLisp = fst . foldr pretty ([], False) . go
+    where go (Node x []) = [x]
+          go (Node x ts) = '(' : x : concatMap go ts ++ ")"
+          -- There's probably a fancy fold to do this
+          pretty '(' (ls, _    ) = ( '('    :ls, True  )
+          pretty ')' (ls, True ) = ( ')':' ':ls, False )
+          pretty ')' (ls, False) = ( ')'    :ls, False )
+          pretty  x  (ls, True ) = (  x :' ':ls, True  )
+          pretty  x  (ls, False) = (  x     :ls, True  )
