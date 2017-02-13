@@ -20,8 +20,8 @@ divides c x = x `mod` c == 0
 -- Problem 31
 isPrime :: Integral a => a -> Bool
 isPrime x
-    | ax == 2 = True  -- this allows us to make `candidates' below general
-    | ax <  2 = False
+    | ax == 2   = True  -- this allows us to make `candidates' below general
+    | ax <  2   = False
     | otherwise = not . any (`divides` ax) $ candidates
     where
       ax            = abs x
@@ -143,7 +143,7 @@ primesR' m n = foldr deleteDivBy xs candidates
 goldbach :: Integral a => a -> (a, a)
 goldbach x | x < 4 = error "invalid argument"
 goldbach x | odd x = error "invalid argument"
-goldbach x = let p = if good 2 then 2 else until good (+2) 3 in (p, x-p)
+goldbach x         = let p = if good 2 then 2 else until good (+2) 3 in (p, x-p)
     where good p = isPrime p && isPrime (x-p)
 
 -- Problem 41
