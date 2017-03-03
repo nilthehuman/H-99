@@ -1,14 +1,15 @@
 module Tests where
 
 import Data.Ratio
-import Data.List          ( maximumBy, minimumBy, nub, nubBy )
-import Data.Function      ( on )
-import Data.Composition   ( (.:) )
+import Data.List           ( maximumBy, minimumBy, nub, nubBy )
+import Data.Function       ( on )
+import Data.Composition    ( (.:) )
 
-import Control.Arrow      ( first, (&&&) )
+import Control.Applicative ( liftA2 )
+import Control.Arrow       ( first, (&&&) )
 
 import Arithmetic
-import BinaryTrees hiding ( flip )
+import BinaryTrees hiding  ( flip )
 import Lists
 import Logic
 
@@ -62,7 +63,7 @@ tests31to41 = map (\f _ _ -> f 2377  == True)                                   
 tests46to50 :: [[Int] -> Int -> Bool]
 tests46to50 = map (\f _ _ ->          all (\(x,y,z) ->        f x y       == z      ) (table            f) )     [myAnd, myOr, nand, nor, xor, equ, impl] ++
               map (\f _ i -> i < 1 || all (\ xs     -> foldl1 f (init xs) == last xs) (tablen i (foldl1 f)))     [myAnd, myOr, nand, nor, xor, equ, impl] ++
-              map (\f _ i -> i < 0 || 10 < i || (recombine2 (==) (floor . (2^^)) (length . f) i))                [gray] ++
+              map (\f _ i -> i < 0 || 10 < i || (liftA2 (==) (floor . (2^^)) (length . f) i))                    [gray] ++
               map (\f l _ -> null l || let l' = f (zip [0..] l) in all ((floor(2^^(length l - 1)) >) . fromIntegral . length . snd) l') [huffmann]
 
 tests54to60 :: [[Int] -> Int -> Bool]
@@ -70,7 +71,7 @@ tests54to60 = map (\f _ i -> f (allTrees 10 () !! i) == True)                [is
               map (\f _ i -> i < 0 || 10 < i || all cbalanced (f i ()))      [cbalTree, cbalTree'] ++
               map (\f _ i -> i < 0 || 12 < i || f (fullTree i ()))           [symmetric] ++
               map (\f l _ -> length (nub l) == size (f l))                   [construct] ++
-              map (\f _ i -> i < 0 || 10 < i || all (recombine2 (&&) cbalanced symmetric) (f i ())) [symCbalTrees] ++
+              map (\f _ i -> i < 0 || 10 < i || all (liftA2 (&&) cbalanced symmetric) (f i ())) [symCbalTrees] ++
               map (\f _ i -> i < 0 ||  4 < i || all hbalanced (f i ()))      [hbalTree, hbalTreeNodes]
 
 tests61to69 :: [[Int] -> Int -> Bool]
@@ -82,9 +83,6 @@ tests61to69 = map (\f l _ ->          let t = construct l in f   t <= size t)   
 fact :: Integral a => a -> a
 fact 0 = 1
 fact n = n * fact (pred n)
-
-recombine2 :: (b -> c -> d) -> (a -> b) -> (a -> c) -> a -> d
-recombine2 c f g = uncurry c . (f &&& g)
 
 binomial :: Integral a => a -> a -> a
 binomial n k = div (fact n) (fact k * fact (n-k))

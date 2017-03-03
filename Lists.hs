@@ -4,7 +4,7 @@
 
 module Lists where
 
-import Control.Applicative ( (<*>) )
+import Control.Applicative ( (<*>), liftA2 )
 import Control.Arrow ( (&&&) )
 import Control.Monad ( replicateM )
 
@@ -77,9 +77,7 @@ myReverse'' (x:xs) = myReverse'' xs ++ [x]
 
 -- Problem 6
 isPalindrome :: Eq a => [a] -> Bool
-isPalindrome = recombine2 (==) id reverse
-    where recombine2 c f g = uncurry c . (f &&& g)
-    -- the "recombine" family of combinators will eventually be isolated into a standalone mini-library
+isPalindrome = liftA2 (==) id reverse
 
 isPalindrome' l = let halflen = fromIntegral (length l) * 0.5 in
                   let (front, back) = (take (floor halflen) l, drop (ceiling halflen) l) in
