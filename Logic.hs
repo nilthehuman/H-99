@@ -3,7 +3,7 @@
 module Logic where
 
 import Data.List        ( intercalate, minimumBy, partition, sortBy )
-import Data.Function    ( on )
+import Data.Ord         ( comparing )
 import Data.Composition ( (.:) )
 
 import Control.Arrow    ( (&&&) )
@@ -87,7 +87,7 @@ huffmann xs = extract xs . until done go $ prepare 0 xs
           min2 = map fst . sortOn snd . map (id &&& flatten) . gatherRoots
               where flatten = sum . map weight
                     weight (_,w,_,_) = w
-                    sortOn = sortBy . (compare `on`)
+                    sortOn = sortBy . comparing
 
           done = (<=1) . length . gatherRoots
           extract xs zs = map (\a -> lookup' a zs) order

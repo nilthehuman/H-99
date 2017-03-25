@@ -12,7 +12,7 @@ import System.IO ( withBinaryFile, IOMode(..) )
 import qualified System.Random as R
 
 import Data.ByteString.Lazy ( hGet )
-import Data.Function ( on )
+import Data.Ord  ( comparing )
 import Data.List ( delete, partition, unfoldr, (\\) )
 
 import Unsafe.Coerce  -- um...
@@ -330,11 +330,11 @@ qsort cmp (x:xs) = qsort cmp lower ++ [x] ++ qsort cmp rest
 
 -- a)
 lsort :: [[a]] -> [[a]]
-lsort = qsort (compare `on` length)
+lsort = qsort (comparing length)
         -- this is the same as: qsort (\x y -> compare (length x) (length y))
 
 -- b)
 lfsort :: [[a]] -> [[a]]
-lfsort xs = map fst . qsort (compare `on` snd) $ map (fmap count) xsWithLengths
+lfsort xs = map fst . qsort (comparing snd) $ map (fmap count) xsWithLengths
     where xsWithLengths = zipWith ((. length) . (,)) xs xs
           count i       = length . filter ((i==) . snd) $ xsWithLengths
